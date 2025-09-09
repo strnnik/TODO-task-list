@@ -3,7 +3,7 @@
 using namespace std::chrono;
 uint32_t Task::counterID = 0;
 
-Task::Task(uint32_t _userID, std::string _name, std::string _description, uint64_t _deadline) :
+Task::Task(uint32_t _userID, std::string _name, std::string _description, std::string _deadline) :
     userID(_userID), name(_name), description(_description), deadline(_deadline){
         ID = counterID++;
         dateCreate.createNowDate();
@@ -29,7 +29,7 @@ Date Task::getDateCreate() const {
     return dateCreate;
 }
 
-uint64_t Task::getDeadline() const {
+std::string Task::getDeadline() const {
     return deadline;
 }
 

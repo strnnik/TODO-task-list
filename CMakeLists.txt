@@ -1,9 +1,26 @@
 cmake_minimum_required(VERSION 3.10)
-project(002-RAM)
-set(CMAKE_CXX_STANDARD 11)
-# РЇРІРЅРѕ СѓРєР°Р·С‹РІР°РµРј РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚СЊ pthread
-find_package(Threads REQUIRED)
-add_executable(002-RAM main.cpp)
 
-# Р”РѕР±Р°РІР»СЏРµРј Р»РёРЅРєРѕРІРєСѓ СЃ pthread
-target_link_libraries(002-RAM PRIVATE Threads::Threads)
+# Установка имени проекта
+project(TODO-task-list VERSION 1.0.0 LANGUAGES CXX)
+
+# Настройка стандарта C++
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Включение каталогов с заголовочными файлами
+include_directories(include)
+
+# Поиск всех исходных файлов
+file(GLOB SOURCES "src/*.cpp")
+
+# Создание исполняемого файла
+add_executable(${PROJECT_NAME} ${SOURCES})
+
+# Альтернативный вариант с явным указанием файлов (предпочтительнее)
+# add_executable(${PROJECT_NAME} 
+#     src/main.cpp
+#     src/Date.cpp
+#     src/Task.cpp
+#     src/User.cpp
+# )

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 #include <cstdint>
 #include "Date.h"
@@ -9,19 +11,19 @@ class Task {
     uint8_t status;
     uint8_t priority;
     Date dateCreate;
-    uint64_t deadline;
+    std::string deadline;
     uint16_t nameLength;
     uint32_t descriptionLength;
     std::string name;
     std::string description;
 public:
-    Task(uint32_t userID, std::string name, std::string description, uint64_t deadline);
+    Task(uint32_t userID, std::string name, std::string description, std::string deadline);
     uint32_t getUserID() const;
     uint32_t getID() const;
     uint8_t getStatus() const;
     uint8_t getPriority() const;
     Date getDateCreate() const;
-    uint64_t getDeadline() const;
+    std::string getDeadline() const;
     uint16_t getNameLength() const;
     uint32_t getDescriptionLength() const;
     std::string getName() const;

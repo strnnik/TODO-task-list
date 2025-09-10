@@ -12,15 +12,15 @@ class User {
     std::string name;
     std::string login;
     std::string hash;
+    std::string salt;
     uint8_t nameLength;
     uint8_t loginLength;
     uint8_t hashLength;
     uint8_t role;
-    std::vector<Task> taskList;
 
 public:
     User() = default;
-    User(std::string name, std::string login, uint8_t role);
+    User(std::string name, std::string login, std::string password, uint8_t role);
     uint32_t getID() const;
     std::string getName() const;
     std::string getLogin() const;
@@ -29,8 +29,9 @@ public:
     uint8_t getLoginLength() const;
     uint8_t getHashLength() const;
     uint8_t getRole() const;
-    void getTasks() const;
+    bool verifyPassword(std::string password);
+    std::string generateHash(std::string password);
+    std::string generateSalt();
     void setName(std::string newName);
     void setLogin(std::string newLogin);
-    void setTask(Task newTask);
 };

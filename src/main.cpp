@@ -1,5 +1,5 @@
 ﻿#include <iostream>
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <windows.h>
 #include "../include/User.h"
@@ -8,9 +8,9 @@
 
 using namespace std;
 
-map<uint32_t, User> dataUser;
-map<uint32_t, Task> dataTask;
-map<string, uint32_t> userLoginID;
+unordered_map<uint32_t, User> dataUser;
+unordered_map<uint32_t, Task> dataTask;
+unordered_map<string, uint32_t> userLoginID;
 
 void editUser(uint32_t userID) {
     cout << "1. Изменить имя\n";
@@ -24,7 +24,7 @@ void editUser(uint32_t userID) {
             cout << "Введите новое имя: ";
             string newName;
             cin >> newName;
-            
+
             break;
         }
         }
@@ -32,17 +32,19 @@ void editUser(uint32_t userID) {
 }
 
 void inputUserData() {
-    string name, login;
+    string name, login, password;
     uint8_t role;
     cout << "\nИмя: ";
     cin >> name;
     cout << "Логин: ";
     cin >> login;
+    cout << "Пароль: ";
+    cin >> password;
     cout << "Роль: ";
     cin >> role;
-    User newUser = User(name, login, role);
+    User newUser = User(name, login, password, role);
     dataUser[newUser.getID()] = newUser;
-    cout << "ID: " << newUser.getID() << endl;
+    userLoginID[login] = newUser.getID();
 }
 
 void addTask(uint32_t userID) {
@@ -54,7 +56,42 @@ void addTask(uint32_t userID) {
     cout << "Дедлайн: ";
     cin >> deadline;
     Task newTask = Task(userID, name, description, deadline);
-    dataUser[userID].setTask(newTask);
+    dataTask[userID] = newTask;
+}
+
+void outputTaskList(uint32_t userID) {
+    bool findTask = false;
+
+    for (auto [id, task] : dataTask) {
+        if (id == userID) {
+            findTask = true;
+            cout << "Номер задачи: " << task.getID() << endl;
+            cout << "Название: " << task.getName() << endl;
+            cout << "Описание: " << task.getDescription() << endl;
+            cout << "Дедлайн: " << task.getDeadline() << endl;
+            cout << "Приоритет задачи: " << task.getPriority() << endl;
+            cout << "Статус задачи: " << task.getStatus() << endl << endl;
+        }
+    }
+
+    if (!findTask)
+        cout << "Список задач пользователя пуст.\n";
+}
+
+void deleteTask(uint32_t userID) {
+    cout << "Введите ID задачи: ";
+    int taskID;
+    cin >> taskID;
+
+    for (auto [id, task] : dataTask) {
+        if (taskID == task.getID() && (userID == task.getID() || dataUser[userID].getRole())) {
+            dataTask.erase(id);
+            cout << "Задача удалена.\n";
+            return;
+        }
+    }
+
+    cout << "Задачи с таким ID не существует или недостаточно прав, чтобы удалить чужую задачу!\n";
 }
 
 void session(uint32_t currUserID) {
@@ -80,14 +117,11 @@ void session(uint32_t currUserID) {
             break;
         }
         case 3: {
-            dataUser[currUserID].getTasks();
+            outputTaskList(currUserID);
             break;
         }
         case 4: {
-            cout << "Введите номер задачи: ";
-            int num;
-            cin >> num;
-
+            deleteTask(currUserID);
             break;
         }
         case 0: {
@@ -100,13 +134,50 @@ void session(uint32_t currUserID) {
     }
 }
 
+void authorization() {
+    cout << "\nВведите логин: ";
+    string login, password;
+    cin >> login;
+    if (userLoginID.find(login) == userLoginID.end()){
+        cout << "Такого пользователя не существует\n";
+        return;
+    }
+    
+    cout << "Введите пароль: ";
+    cin >> password;
+
+    while (!dataUser[userLoginID[login]].verifyPassword(password)) {
+        cout << "Пароль неправильный. Повторить ввод? (1/0) ";
+        int key;
+        cin >> key;
+        if (key) {
+            cout << "Введите пароль: ";
+            cin >> password;
+        }
+        else {
+            return;
+        }
+    }
+
+    session(userLoginID[login]);
+}
+
+void outputAllUsers() {
+    cout << endl;
+    for (auto [id, user] : dataUser) {
+        cout << "ID: " << id << endl;
+        cout << "Имя: " << user.getName() << endl;
+        cout << "Роль: " << user.getRole() << endl;
+    }
+}
+
 int main(){
     setlocale(LC_ALL, "Russian");
     //tConsoleOutputCP(CP_UTF8);
     //tConsoleCP(CP_UTF8);
 
     while (true) {
-        cout << "\n0. Войти\n";
+        cout << "0. Войти\n";
         cout << "1. Создать пользователя\n";
         cout << "2. Вывести список всех пользователей\n";
         cout << "3. Выход\n";
@@ -116,14 +187,7 @@ int main(){
 
         switch (k) {
         case 0: {
-            cout << "\nВведите ID пользователя: ";
-            uint32_t idUser;
-            cin >> idUser;
-            if (dataUser.find(idUser) != dataUser.end())
-                session(idUser);
-            else {
-                cout << "Такого пользователя не существует\n";
-            }
+            authorization();
             break;
         }
         case 1: {
@@ -131,16 +195,18 @@ int main(){
             break;
         }
         case 2: {
-
+            outputAllUsers();
             break;
         }
         case 3: {
-
+            return 0;
             break;
         }
         default:
             break;
         }
+
+        cout << endl;
     }
 
     return 0;

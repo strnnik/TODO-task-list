@@ -20,18 +20,16 @@ class User {
 
 public:
     User() = default;
-    User(std::string name, std::string login, std::string password, uint8_t role);
+    User(std::string name, std::string login, uint8_t role, std::string hash, std::string salt);
     uint32_t getID() const;
     std::string getName() const;
     std::string getLogin() const;
     std::string getHash() const;
+    std::string getSalt() const;
     uint8_t getNameLength() const;
     uint8_t getLoginLength() const;
     uint8_t getHashLength() const;
     uint8_t getRole() const;
-    bool verifyPassword(std::string password);
-    std::string generateHash(std::string password);
-    std::string generateSalt();
     void setName(std::string newName);
     void setLogin(std::string newLogin);
 };

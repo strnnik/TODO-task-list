@@ -2,45 +2,10 @@
 
 uint32_t User::counterID = 0;
 
-User::User(std::string newName, std::string newLogin, std::string newPassword, uint8_t newRole) :
+User::User(std::string newName, std::string newLogin, uint8_t newRole, std::string newHash, std::string newSalt) :
     name(newName), login(newLogin), role(newRole){
         ID = counterID++;
-        nameLength = name.length();
-        loginLength = login.length();
-        salt = generateSalt();
-        hash = generateHash(newPassword);
     }
-
-bool User::verifyPassword(std::string password) {
-    if (generateHash(password) == hash)
-        return true;
-    else 
-        return false;
-}
-
-std::string User::generateHash(std::string password) {
-    std::string symbol = "abcdefghijklmnopqrstuvwxyz1234567890";
-    std::string hash = salt;
-
-    for (int i = 0; i < password.length(); i++) {
-        hash[i] = symbol[(salt[i] + password[i] - 2 * 'a') % symbol.length()];
-    }
-
-    std::cout << "HASH: " << hash << std::endl;
-    return hash;
-}
-
-std::string User::generateSalt() {
-    std::string symbol = "abcdefghijklmnopqrstuvwxyz1234567890";
-    salt = "0000111122223333";
-
-    for (size_t i = 0; i < salt.length(); i++) {
-        salt[i] = symbol[rand() % 36];
-    }
-
-    std::cout << "SALT: " << salt << std::endl;
-    return salt;
-}
 
 uint32_t User::getID() const {
     return ID;
@@ -56,6 +21,10 @@ std::string User::getLogin() const {
 
 std::string User::getHash() const {
     return hash;
+}
+
+std::string User::getSalt() const {
+    return salt;
 }
 
 uint8_t User::getNameLength() const {

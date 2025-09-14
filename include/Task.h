@@ -17,6 +17,7 @@ class Task {
     std::string name;
     std::string description;
 public:
+    Task() = default;
     Task(uint32_t userID, std::string name, std::string description, std::string deadline);
     uint32_t getUserID() const;
     uint32_t getID() const;

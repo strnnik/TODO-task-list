@@ -16,8 +16,8 @@ class User {
     uint8_t nameLength;
     uint8_t loginLength;
     uint8_t hashLength;
+    uint8_t saltLength;
     uint8_t role;
-
 public:
     User() = default;
     User(std::string name, std::string login, uint8_t role, std::string hash, std::string salt);
@@ -32,4 +32,6 @@ public:
     uint8_t getRole() const;
     void setName(std::string newName);
     void setLogin(std::string newLogin);
+    void setHash(std::string newHash);
+    void setSalt(std::string newSalt);
 };

@@ -1,5 +1,5 @@
-// AuthService.h
 #pragma once
+
 #include <string>
 #include <unordered_map>
 #include <map>
@@ -8,14 +8,12 @@
 
 class AuthService {
 private:
-    std::unordered_map<int, User>& users;
+    std::unordered_map<uint32_t, User>& users;
 
 public:
-    AuthService(std::unordered_map<int, User>& users);
-
+    AuthService(std::unordered_map<uint32_t, User>& users);
     User* findUserByLogin(const std::string& login);
     bool loginExists(const std::string& login);
-    bool registerUser(const std::string& name, const std::string& login, uint8_t role, const std::string password, std::string& errorMessage);
-    bool login(const std::string& login, const std::string& password, std::string& errorMessage);
-    void session(User* user);
+    bool registerUser(const std::string& name, const std::string& login, const std::string& password, uint8_t role, std::string& errorMessage);
+    bool loginUser(const std::string& login, const std::string& password, std::string& errorMessage);
 };

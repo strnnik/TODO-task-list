@@ -1,131 +1,144 @@
 ﻿#include <iostream>
 #include <unordered_map>
 #include <string>
-#include <windows.h>
+#include <ctime>
 #include "../include/User.h"
 #include "../include/Task.h"
-#include "../include/Date.h"
+#include "../include/AuthService.h"
+#include "../include/UserSession.h"
 
 using namespace std;
 
 unordered_map<uint32_t, User> dataUser;
 unordered_map<uint32_t, Task> dataTask;
-unordered_map<string, uint32_t> userLoginID;
-
-void editUser(uint32_t userID) {
-    cout << "1. Изменить имя\n";
-    cout << "2. Изменить логин\n";
-    cout << "Выберите действие: ";
-    int k;
-    cin >> k;
-    while (true) {
-        switch (k) {
-        case 1: {
-            cout << "Введите новое имя: ";
-            string newName;
-            cin >> newName;
-
-            break;
-        }
-        }
-    }
-}
-
-void inputUserData() {
-    string name, login, password;
-    uint8_t role;
-    cout << "\nИмя: ";
-    cin >> name;
-    cout << "Логин: ";
-    cin >> login;
-    cout << "Пароль: ";
-    cin >> password;
-    cout << "Роль: ";
-    cin >> role;
-    User newUser = User(name, login, password, role);
-    dataUser[newUser.getID()] = newUser;
-    userLoginID[login] = newUser.getID();
-}
-
-void addTask(uint32_t userID) {
-    string name, description, deadline;
-    cout << "\nНазвание: ";
-    cin >> name;
-    cout << "Описание: ";
-    cin >> description;
-    cout << "Дедлайн: ";
-    cin >> deadline;
-    Task newTask = Task(userID, name, description, deadline);
-    dataTask[userID] = newTask;
-}
 
 void outputTaskList(uint32_t userID) {
     bool findTask = false;
 
-    for (auto [id, task] : dataTask) {
-        if (id == userID) {
+    for (auto& [id, task] : dataTask) {
+        if (task.getUserID() == userID) {
             findTask = true;
-            cout << "Номер задачи: " << task.getID() << endl;
+            cout << "\nНомер: " << task.getID() << endl;
+            cout << "Дата создания: " << task.getDateCreate() << endl;
             cout << "Название: " << task.getName() << endl;
             cout << "Описание: " << task.getDescription() << endl;
             cout << "Дедлайн: " << task.getDeadline() << endl;
-            cout << "Приоритет задачи: " << task.getPriority() << endl;
-            cout << "Статус задачи: " << task.getStatus() << endl << endl;
+            cout << "Приоритет задачи: " << +task.getPriority() << endl;
+            cout << "Статус задачи: " << +task.getStatus() << endl;
         }
     }
 
     if (!findTask)
-        cout << "Список задач пользователя пуст.\n";
+        cout << "\nСписок задач пользователя пуст.\n";
 }
 
-void deleteTask(uint32_t userID) {
-    cout << "Введите ID задачи: ";
-    int taskID;
-    cin >> taskID;
-
-    for (auto [id, task] : dataTask) {
-        if (taskID == task.getID() && (userID == task.getID() || dataUser[userID].getRole())) {
-            dataTask.erase(id);
-            cout << "Задача удалена.\n";
-            return;
-        }
-    }
-
-    cout << "Задачи с таким ID не существует или недостаточно прав, чтобы удалить чужую задачу!\n";
-}
-
-void session(uint32_t currUserID) {
-    cout << "\nВы вошли в аккаунт пользователя: " << dataUser[currUserID].getName() << endl;
-    bool login = true;
-    while (login) {
+void adminDashboard(UserSession* session) {
+    cout << "\nВы вошли в аккаунт администратора: " << session->getCurrentUser()->getName() << endl;
+    std::string errorMessage = "";
+    while (session->isValidSession()) {
         cout << "\n1. Добавить задачу\n";
-        cout << "2. Редактировать информацию о пользователе\n";
+        cout << "2. Редактировать профиль\n";
         cout << "3. Вывести список задач\n";
         cout << "4. Удалить задачу\n";
         cout << "0. Выход из сессии\n";
         cout << "Выберите действие: ";
-        int k;
-        cin >> k;
-        switch (k)
+        int key1;
+        cin >> key1;
+        switch (key1)
         {
         case 1: {
-            addTask(currUserID);
+            string nameTask, descriptionTask, deadlineTask;
+            int priorityTask, statusTask;
+            cout << "\nВвод информации о задаче\n";
+            cout << "Название: ";
+            cin >> nameTask;
+            cout << "Описание: ";
+            cin >> descriptionTask;
+            cout << "Дедлайн: ";
+            cin >> deadlineTask;
+            cout << "Приоритет задачи (0, 1, 2 - от меньшего к большему приоритету): ";
+            cin >> priorityTask;
+            cout << "Статус задачи (0 - не выполняется, 1 - в процессе выполнения, 2 - выполнена): ";
+            cin >> statusTask;
+            if (session->addTask(nameTask, descriptionTask, static_cast<uint8_t>(priorityTask),
+                static_cast<uint8_t>(statusTask), deadlineTask, errorMessage))
+                cout << "Задача добавлена\n";
+            else
+                cout << errorMessage << endl;
             break;
         }
         case 2: {
-            editUser(currUserID);
+            cout << "\nРедактирование профиля:\n";
+            cout << "1. Изменить имя\n";
+            cout << "2. Изменить логин\n";
+            cout << "3. Изменить пароль\n";
+            cout << "0. Выход\n";
+            cout << "Выберите действие: ";
+            int key2;
+            cin >> key2;
+            switch (key2) {
+            case 1: {
+                string newName;
+                cout << "\nВведите новое имя: ";
+                cin >> newName;
+                if (session->changeName(newName, errorMessage)) {
+                    cout << "Имя изменено\n";
+                }
+                else {
+                    cout << errorMessage << endl;
+                }
+                break;
+            }
+            case 2: {
+                string newLogin;
+                cout << "\nВведите новый логин: ";
+                cin >> newLogin;
+                if (session->changeLogin(newLogin, errorMessage)) {
+                    cout << "Логин изменен\n";
+                }
+                else {
+                    cout << errorMessage << endl;
+                }
+                break;
+            }
+            case 3: {
+                string newPassword, oldPassword;
+                cout << "\nВведите старый пароль: ";
+                cin >> oldPassword;
+                cout << "Введите новый пароль: ";
+                cin >> newPassword;
+                if (session->changePassword(oldPassword, newPassword, errorMessage)) {
+                    cout << "Пароль изменен" << endl;
+                }
+                else {
+                    cout << errorMessage << endl;
+                }
+                break;
+            }
+            default:
+                break;
+            }
             break;
         }
         case 3: {
-            outputTaskList(currUserID);
+            outputTaskList(session->getCurrentUser()->getID());
             break;
         }
         case 4: {
-            deleteTask(currUserID);
+            cout << "\nВведите ID задачи: ";
+            int taskID;
+            cin >> taskID;
+            if (session->deleteTask(taskID, errorMessage)) {
+                cout << "Задача удалена.\n";
+            }
+            else {
+                cout << errorMessage << endl;
+            }
             break;
         }
         case 0: {
-            login = false;
+            cout << "\nСессия пользователя " << session->getCurrentUser()->getName() << " завершена\n";
+            session->invalidate();
             break;
         }
         default:
@@ -134,71 +147,197 @@ void session(uint32_t currUserID) {
     }
 }
 
-void authorization() {
-    cout << "\nВведите логин: ";
-    string login, password;
-    cin >> login;
-    if (userLoginID.find(login) == userLoginID.end()){
-        cout << "Такого пользователя не существует\n";
-        return;
+void userDashboard(UserSession* session) {
+    cout << "\nВы вошли в аккаунт пользователя: " << session->getCurrentUser()->getName() << endl;
+    std::string errorMessage = "";
+    while (session->isValidSession()) {
+        cout << "\n1. Добавить задачу\n";
+        cout << "2. Редактировать профиль\n";
+        cout << "3. Вывести список задач\n";
+        cout << "4. Удалить задачу\n";
+        cout << "0. Выход из сессии\n";
+        cout << "Выберите действие: ";
+        int key1;
+        cin >> key1;
+        switch (key1)
+        {
+        case 1: {
+            string nameTask, descriptionTask, deadlineTask;
+            int priorityTask, statusTask;
+            cout << "\nВвод информации о задаче\n";
+            cout << "Название: ";
+            cin >> nameTask;
+            cout << "Описание: ";
+            cin >> descriptionTask;
+            cout << "Дедлайн: ";
+            cin >> deadlineTask;
+            cout << "Приоритет задачи (0, 1, 2 - от меньшего к большему приоритету): ";
+            cin >> priorityTask;
+            cout << "Статус задачи (0 - не выполняется, 1 - в процессе выполнения, 2 - выполнена): ";
+            cin >> statusTask;
+            if (session->addTask(nameTask, descriptionTask, static_cast<uint8_t>(priorityTask),
+                static_cast<uint8_t>(statusTask), deadlineTask, errorMessage))
+                cout << "Задача добавлена\n";
+            else
+                cout << errorMessage << endl;
+            break;
+        }
+        case 2: {
+            cout << "\nРедактирование профиля:\n";
+            cout << "1. Изменить имя\n";
+            cout << "2. Изменить логин\n";
+            cout << "3. Изменить пароль\n";
+            cout << "0. Выход\n";
+            cout << "Выберите действие: ";
+            int key2;
+            cin >> key2;
+            switch (key2) {
+            case 1: {
+                string newName;
+                cout << "\nВведите новое имя: ";
+                cin >> newName;
+                if (session->changeName(newName, errorMessage)) {
+                    cout << "Имя изменено\n";
+                }
+                else {
+                    cout << errorMessage << endl;
+                }
+                break;
+            }
+            case 2: {
+                string newLogin;
+                cout << "\nВведите новый логин: ";
+                cin >> newLogin;
+                if (session->changeLogin(newLogin, errorMessage)) {
+                    cout << "Логин изменен\n";
+                }
+                else {
+                    cout << errorMessage << endl;
+                }
+                break;
+            }
+            case 3: {
+                string newPassword, oldPassword;
+                cout << "\nВведите старый пароль: ";
+                cin >> oldPassword;
+                cout << "Введите новый пароль: ";
+                cin >> newPassword;
+                if (session->changePassword(oldPassword, newPassword, errorMessage)) {
+                    cout << "Пароль изменен" << endl;
+                }
+                else {
+                    cout << errorMessage << endl;
+                }
+                break;
+            }
+            default:
+                break;
+            }
+            break;
+        }
+        case 3: {
+            outputTaskList(session->getCurrentUser()->getID());
+            break;
+        }
+        case 4: {
+            cout << "\nВведите ID задачи: ";
+            int taskID;
+            cin >> taskID;
+            if (session->deleteTask(taskID, errorMessage)) {
+                cout << "Задача удалена.\n";
+            }
+            else {
+                cout << errorMessage << endl;
+            }
+            break;
+        }
+        case 0: {
+            cout << "\nСессия пользователя " << session->getCurrentUser()->getName() << " завершена\n";
+            session->invalidate();
+            break;
+        }
+        default:
+            break;
+        }
     }
-    
+}
+
+void registration() {
+    AuthService auth = AuthService(dataUser);
+    string name, login, password, errorMessage = "";
+    int role;
+    cout << "\nРегистрация пользователя\n";
+    cout << "Имя: ";
+    cin >> name;
+    cout << "Логин: ";
+    cin >> login;
+    cout << "Пароль: ";
+    cin >> password;
+
+    while (!auth.registerUser(name, login, password, 0, errorMessage)) {
+        cout << errorMessage << ". Повторить ввод? (1/0) ";
+        int key;
+        cin >> key;
+        if (!key)
+            return;
+        cout << "\nИмя: ";
+        cin >> name;
+        cout << "Логин: ";
+        cin >> login;
+        cout << "Пароль: ";
+        cin >> password;
+        errorMessage = "";
+    }
+
+    cout << "Регистрация прошла успешно\n";
+}
+
+void authorization() {
+    AuthService auth = AuthService(dataUser);
+    string login, password, errorMessage = "";
+    cout << "\nВведите логин: ";
+    cin >> login;
     cout << "Введите пароль: ";
     cin >> password;
 
-    while (!dataUser[userLoginID[login]].verifyPassword(password)) {
-        cout << "Пароль неправильный. Повторить ввод? (1/0) ";
+    while (!auth.loginUser(login, password, errorMessage)) {
+        cout << errorMessage << ". Повторить ввод? (1/0) ";
         int key;
         cin >> key;
-        if (key) {
-            cout << "Введите пароль: ";
-            cin >> password;
-        }
-        else {
+        if (!key)
             return;
-        }
+        cout << "Введите пароль: ";
+        cin >> password;
     }
 
-    session(userLoginID[login]);
-}
-
-void outputAllUsers() {
-    cout << endl;
-    for (auto [id, user] : dataUser) {
-        cout << "ID: " << id << endl;
-        cout << "Имя: " << user.getName() << endl;
-        cout << "Роль: " << user.getRole() << endl;
-    }
+    UserSession session = UserSession(&dataUser[auth.findUserByLogin(login)->getID()], dataTask, dataUser);
+    userDashboard(&session);
 }
 
 int main(){
-    setlocale(LC_ALL, "Russian");
-    //tConsoleOutputCP(CP_UTF8);
-    //tConsoleCP(CP_UTF8);
+    setlocale(LC_ALL, "Russian");   
+    AuthService adminAuth = AuthService(dataUser);
+    string s = "";
+    adminAuth.registerUser("adminka", "admin", "admin123", 0, s);
 
     while (true) {
-        cout << "0. Войти\n";
-        cout << "1. Создать пользователя\n";
-        cout << "2. Вывести список всех пользователей\n";
-        cout << "3. Выход\n";
+        cout << "1. Регистрация\n";
+        cout << "2. Авторизация\n";
+        cout << "0. Выход\n";
         cout << "Выберите действие: ";
         int k;
         cin >> k;
 
         switch (k) {
-        case 0: {
-            authorization();
-            break;
-        }
         case 1: {
-            inputUserData();
+            registration();
             break;
         }
         case 2: {
-            outputAllUsers();
+            authorization();
             break;
         }
-        case 3: {
+        case 0: {
             return 0;
             break;
         }

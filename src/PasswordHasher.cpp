@@ -15,7 +15,6 @@ std::string PasswordHasher::generateHash(const std::string& password, const std:
         hash[i] = symbol[(salt[i] + password[i] - 2 * 'a') % symbol.length()];
     }
 
-    std::cout << "HASH: " << hash << std::endl;
     return hash;
 }
 
@@ -27,6 +26,5 @@ std::string PasswordHasher::generateSalt() {
         salt[i] = symbol[rand() % 36];
     }
 
-    std::cout << "SALT: " << salt << std::endl;
     return salt;
 }

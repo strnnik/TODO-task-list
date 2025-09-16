@@ -3,8 +3,12 @@
 uint32_t User::counterID = 0;
 
 User::User(std::string newName, std::string newLogin, uint8_t newRole, std::string newHash, std::string newSalt) :
-    name(newName), login(newLogin), role(newRole){
+    name(newName), login(newLogin), role(newRole), hash(newHash), salt(newSalt) {
         ID = counterID++;
+        nameLength = (uint8_t)name.length();
+        loginLength = (uint8_t)login.length();
+        hashLength = (uint8_t)hash.length();
+        saltLength = (uint8_t)salt.length();
     }
 
 uint32_t User::getID() const {
@@ -49,4 +53,12 @@ void User::setName(std::string newName) {
 
 void User::setLogin(std::string newLogin) {
     login = newLogin;
+}
+
+void User::setHash(std::string newHash) {
+    hash = newHash;
+}
+
+void User::setSalt(std::string newSalt) {
+    salt = newSalt;
 }

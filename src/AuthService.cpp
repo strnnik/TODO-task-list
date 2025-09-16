@@ -1,10 +1,10 @@
 #include "AuthService.h"
 
-AuthService::AuthService(std::unordered_map<int, User>& users) : users(users) {};
+AuthService::AuthService(std::unordered_map<uint32_t, User>& users) : users(users) {};
 
-User* AuthService::findUserByLogin(const std::string& name) {
+User* AuthService::findUserByLogin(const std::string& login) {
     for (auto& pair : users) {
-        if (pair.second.getLogin() == name) {
+        if (pair.second.getLogin() == login) {
             return &pair.second;
         }
     }
@@ -15,9 +15,9 @@ bool AuthService::loginExists(const std::string& name) {
     return findUserByLogin(name) != nullptr;
 }
 
-bool AuthService::registerUser(const std::string& name, const std::string& login, uint8_t role, const std::string password, std::string& errorMessage) {
+bool AuthService::registerUser(const std::string& name, const std::string& login, const std::string& password, uint8_t role, std::string& errorMessage) {
     if (name.empty() || login.empty() || password.empty()) {
-        errorMessage = "»м€ пользовател€ и пароль не могут быть пустыми";
+        errorMessage = "»м€ пользовател€, логин и пароль не могут быть пустыми";
         return false;
     }
 
@@ -31,6 +31,11 @@ bool AuthService::registerUser(const std::string& name, const std::string& login
         return false;
     }
 
+    if (role > 2) {
+        errorMessage = "“акой роли не предусмотрено";
+        return false;
+    }
+
     std::string salt = PasswordHasher::generateSalt();
     std::string hash = PasswordHasher::generateHash(password, salt);
 
@@ -40,7 +45,7 @@ bool AuthService::registerUser(const std::string& name, const std::string& login
     return true;
 }
 
-bool AuthService::login(const std::string& login, const std::string& password, std::string& errorMessage) {
+bool AuthService::loginUser(const std::string& login, const std::string& password, std::string& errorMessage) {
     if (login.empty() || password.empty()) {
         errorMessage = "»м€ пользовател€ и пароль не могут быть пустыми";
         return false;
@@ -53,7 +58,7 @@ bool AuthService::login(const std::string& login, const std::string& password, s
 
     User* user = findUserByLogin(login);
 
-    if (PasswordHasher::verifyPassword(password, user->getHash(), user->getSalt())) {
+    if (!PasswordHasher::verifyPassword(password, user->getHash(), user->getSalt())) {
         errorMessage = "Ќеверный пароль";
         return false;
     }

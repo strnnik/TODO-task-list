@@ -5,10 +5,10 @@ uint32_t User::counterID = 0;
 User::User(std::string newName, std::string newLogin, uint8_t newRole, std::string newHash, std::string newSalt) :
     name(newName), login(newLogin), role(newRole), hash(newHash), salt(newSalt) {
         ID = counterID++;
-        nameLength = (uint8_t)name.length();
-        loginLength = (uint8_t)login.length();
-        hashLength = (uint8_t)hash.length();
-        saltLength = (uint8_t)salt.length();
+        nameLength = static_cast<uint8_t>(name.length());
+        loginLength = static_cast<uint8_t>(login.length());
+        hashLength = static_cast<uint8_t>(hash.length());
+        saltLength = static_cast<uint8_t>(salt.length());
     }
 
 uint32_t User::getID() const {

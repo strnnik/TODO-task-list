@@ -21,8 +21,13 @@ public:
 	bool isValidSession() const;
 	void invalidate();
 	User* getCurrentUser() const;
+	std::vector<Task*> getUserTasks() const;
 	bool changeName(const std::string& newName, std::string& errorMessage);
 	bool changeLogin(const std::string& newLogin, std::string& errorMessage);
 	bool changePassword(const std::string& oldPassword, const std::string& newPassword, std::string& errorMessage);
 	bool deleteTask(const uint32_t taskID, std::string& errorMessage);
+	bool findUserTaskID(const uint32_t findTaskID, std::string& errorMessage);
+	bool changeDescription(const uint32_t taskID, const std::string& newDescr, std::string& errorMessage);
+	bool changeDeadline(const uint32_t taskID, const std::string newDeadline, std::string& errorMessage);
+	bool changeStatus(const uint32_t taskID, const uint8_t newStatus, std::string& errorMessage);
 };

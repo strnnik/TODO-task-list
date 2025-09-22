@@ -6,6 +6,8 @@
 #include "../include/Task.h"
 #include "../include/AuthService.h"
 #include "../include/UserSession.h"
+#include "../include/UserDashBoard.h"
+#include "../include/BaseDashBoard.h"
 
 using namespace std;
 
@@ -147,7 +149,7 @@ void adminDashboard(UserSession* session) {
     }
 }
 
-void userDashboard(UserSession* session) {
+void userDashboard123(UserSession* session) {
     cout << "\nВы вошли в аккаунт пользователя: " << session->getCurrentUser()->getName() << endl;
     std::string errorMessage = "";
     while (session->isValidSession()) {
@@ -311,7 +313,16 @@ void authorization() {
     }
 
     UserSession session = UserSession(&dataUser[auth.findUserByLogin(login)->getID()], dataTask, dataUser);
-    userDashboard(&session);
+    UserDashboard userDashboard = UserDashboard(&session);
+    userDashboard.run();
+}
+
+void showAuthMenu() {
+    cout << "=== ГЛАВНОЕ МЕНЮ ===\n";
+    cout << "1. Регистрация\n";
+    cout << "2. Авторизация\n";
+    cout << "0. Выход\n";
+    cout << "Выберите действие: ";
 }
 
 int main(){
@@ -321,28 +332,15 @@ int main(){
     adminAuth.registerUser("adminka", "admin", "admin123", 0, s);
 
     while (true) {
-        cout << "1. Регистрация\n";
-        cout << "2. Авторизация\n";
-        cout << "0. Выход\n";
-        cout << "Выберите действие: ";
+        showAuthMenu();
         int k;
         cin >> k;
 
         switch (k) {
-        case 1: {
-            registration();
-            break;
-        }
-        case 2: {
-            authorization();
-            break;
-        }
-        case 0: {
-            return 0;
-            break;
-        }
-        default:
-            break;
+        case 1: registration(); break;
+        case 2: authorization(); break;
+        case 0: return 0; break;
+        default: std::cout << "Неверный выбор! Попробуйте снова.\n";
         }
 
         cout << endl;

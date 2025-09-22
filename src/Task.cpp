@@ -8,7 +8,8 @@ Task::Task(uint32_t _userID, std::string _name, std::string _description,
     description(_description), priority(_priority), 
     status(_status), deadline(_deadline), 
     dateCreate(createNowDate()), ID(counterID++) {
-
+    nameLength = static_cast<uint8_t>(name.length());
+    descriptionLength = static_cast<uint8_t>(description.length());
 }
 
 std::string Task::createNowDate() const {
@@ -19,13 +20,12 @@ std::string Task::createNowDate() const {
     if (std::to_string(now->tm_mday).length() == 1)
         date += '0';
 
-    date += '.' + std::to_string(now->tm_mday);
+    date += std::to_string(now->tm_mday) + '.';
 
     if (std::to_string(now->tm_mon).length() == 1)
         date += '0';
 
-    date += '.' + std::to_string(now->tm_mon + 1);
-    date += '.' + std::to_string(now->tm_year + 1900);
+    date += std::to_string(now->tm_mon + 1) + '.' + std::to_string(now->tm_year + 1900);
 
     return date;
 }
@@ -68,4 +68,16 @@ std::string Task::getName() const {
 
 std::string Task::getDescription() const {
     return description;
+}
+
+void Task::setDescription(const std::string& newDescription) {
+    description = newDescription;
+}
+
+void Task::setDeadline(const std::string& newDeadline){
+    deadline = newDeadline;
+}
+
+void Task::setStatus(const uint8_t& newStatus){
+    status = newStatus;
 }

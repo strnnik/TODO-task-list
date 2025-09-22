@@ -15,7 +15,7 @@ include_directories(include)
 file(GLOB SOURCES "src/*.cpp")
 
 # Создание исполняемого файла
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES} "include/BaseDashboard.h")
 
 # Альтернативный вариант с явным указанием файлов (предпочтительнее)
 # add_executable(${PROJECT_NAME} 

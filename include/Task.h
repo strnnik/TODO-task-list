@@ -32,4 +32,7 @@ public:
     uint32_t getDescriptionLength() const;
     std::string getName() const;
     std::string getDescription() const;
+    void setDescription(const std::string& newDescription);
+    void setDeadline(const std::string& newDeadline);
+    void setStatus(const uint8_t& newStatus);
 };

@@ -101,21 +101,90 @@ bool UserSession::changeLogin(const std::string& newLogin, std::string& errorMes
     return true;
 }
 
+bool UserSession::findUserTaskID(const uint32_t findTaskID, std::string& errorMessage) {
+    if (!isValidSession()) {
+        errorMessage = "Сессия неактуальна";
+        return false;
+    }
+
+    if (tasks.find(findTaskID) != tasks.end() && (tasks[findTaskID].getUserID() == currentUser->getID() || currentUser->getRole())) {
+        return true;
+    }
+
+    errorMessage = "Задачи с таким ID не существует или недостаточно прав, чтобы удалить чужую задачу!";
+    
+    return false;
+}
+
 bool UserSession::deleteTask(uint32_t delTaskID, std::string& errorMessage) {
     if (!isValidSession()) {
         errorMessage = "Сессия неактуальна";
         return false;
     }
 
-    for (auto& [taskID, task] : tasks) {
-        if (taskID == delTaskID) 
-            if (task.getUserID() == currentUser->getID() || currentUser->getRole()) {
-                tasks.erase(delTaskID);
-                return true;
-            }
+    if (findUserTaskID(delTaskID, errorMessage)) {
+        tasks.erase(delTaskID);
+        return true;
     }
 
-    errorMessage = "Задачи с таким ID не существует или недостаточно прав, чтобы удалить чужую задачу!";
-
     return false;
+}
+
+std::vector<Task*> UserSession::getUserTasks() const {
+    std::vector<Task*> userTasks;
+
+    for (auto& [taskID,  task] : tasks) {
+        if (currentUser->getID() == task.getUserID())
+            userTasks.push_back(&task);
+    }
+
+    return userTasks;
+}
+
+bool UserSession::changeDescription(const uint32_t taskID, const std::string& newDescr, std::string& errorMessage) {
+    if (!isValidSession()) {
+        errorMessage = "Сессия неактуальна";
+        return false;
+    }
+
+    if (newDescr.empty()) {
+        errorMessage = "Описание не может быть пустым";
+        return false;
+    }
+
+    tasks[taskID].setDescription(newDescr);
+
+    return true;
+}
+
+bool UserSession::changeDeadline(const uint32_t taskID, const std::string newDeadline, std::string& errorMessage) {
+    if (!isValidSession()) {
+        errorMessage = "Сессия неактуальна";
+        return false;
+    }
+
+    if (newDeadline.empty()) {
+        errorMessage = "Дедлайн не может быть пустым";
+        return false;
+    }
+
+    tasks[taskID].setDeadline(newDeadline);
+
+    return true;
+}
+
+bool UserSession::changeStatus(const uint32_t taskID, const uint8_t newStatus, std::string& errorMessage){
+    if (!isValidSession()) {
+        errorMessage = "Сессия неактуальна";
+        return false;
+    }
+
+    if (newStatus > 2) {
+        errorMessage = "Такого статуса не предусмотрено";
+        return false;
+    }
+
+    tasks[taskID].setStatus(newStatus);
+
+    return true;
 }

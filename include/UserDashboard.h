@@ -11,11 +11,7 @@ private:
     void editTask();
     void deleteTask();
     void viewProfile();
-    void editProfile();
 
-    void changeName();
-    void changeLogin();
-    void changePassword();
     void changeDescription(const uint8_t taskID);
     void changeDeadline(const uint8_t taskID);
     void changeStatus(const uint8_t taskID);

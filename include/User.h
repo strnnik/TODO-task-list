@@ -34,4 +34,5 @@ public:
     void setLogin(std::string newLogin);
     void setHash(std::string newHash);
     void setSalt(std::string newSalt);
+    void setRole(uint8_t newRole);
 };

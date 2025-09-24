@@ -15,6 +15,13 @@ public:
     virtual ~BaseDashboard();
 
     virtual void run();
+    virtual void viewProfile();
+    virtual void editProfile();
+    virtual void changeName();
+    virtual void changeLogin();
+    virtual void changePassword();
+    virtual void showEditProfileMenu();
+
     void logout();
     bool isSessionValid() const;
 };

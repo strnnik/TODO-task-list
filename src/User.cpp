@@ -62,3 +62,7 @@ void User::setHash(std::string newHash) {
 void User::setSalt(std::string newSalt) {
     salt = newSalt;
 }
+
+void User::setRole(uint8_t newRole) {
+    role = newRole;
+}

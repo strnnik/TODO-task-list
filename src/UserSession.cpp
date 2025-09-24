@@ -4,6 +4,7 @@ UserSession::UserSession(User* user,
     std::unordered_map<uint32_t, Task>& tasks,
     std::unordered_map<uint32_t, User>& users)
     : currentUser(user), tasks(tasks), users(users) {
+    setlocale(LC_ALL, "Russian");
     createdSession = time(nullptr);
     isValid = true;
 }

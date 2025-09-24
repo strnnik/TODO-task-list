@@ -2,12 +2,10 @@
 
 BaseDashboard::BaseDashboard(UserSession* session)
     : currentSession(session) {
-
+    setlocale(LC_ALL, "Russian");
 }
 
-BaseDashboard::~BaseDashboard() {
-
-}
+BaseDashboard::~BaseDashboard() {}
 
 bool BaseDashboard::isSessionValid() const {
     return currentSession && currentSession->isValidSession();
@@ -15,13 +13,13 @@ bool BaseDashboard::isSessionValid() const {
 
 void BaseDashboard::run() {
     if (!isSessionValid()) {
-        std::cout << "Ошибка: Сессия недействительна или истекла!\n";
+        std::cout << "Сессия неактуальна\n";
         return;
     }
 
     std::cout << "\nДобро пожаловать, " << currentSession->getCurrentUser()->getName() << "!\n";
 
-    int choice = -1;
+    int choice;
 
     do {
         showMenu();
@@ -40,6 +38,7 @@ void BaseDashboard::run() {
     } while (choice != 0);
 
     std::cout << "Выход из личного кабинета...\n";
+    logout();
 }
 
 void BaseDashboard::logout() {

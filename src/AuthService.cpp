@@ -1,6 +1,8 @@
 #include "AuthService.h"
 
-AuthService::AuthService(std::unordered_map<uint32_t, User>& users) : users(users) {};
+AuthService::AuthService(std::unordered_map<uint32_t, User>& users) : users(users) {
+    setlocale(LC_ALL, "Russian");
+};
 
 User* AuthService::findUserByLogin(const std::string& login) {
     for (auto& pair : users) {

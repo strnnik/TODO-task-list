@@ -3,7 +3,9 @@
 #include <iostream>
 
 UserDashboard::UserDashboard(UserSession* session)
-    : BaseDashboard(session) {}
+    : BaseDashboard(session) {
+    setlocale(LC_ALL, "Russian");
+}
 
 UserDashboard::~UserDashboard() {}
 
@@ -21,13 +23,13 @@ void UserDashboard::showMenu() {
 
 void UserDashboard::processChoice(int choice) {
     switch (choice) {
-    case 1: addTask(); break;
-    case 2: viewTasks(); break;
-    case 3: editTask(); break;
-    case 4: deleteTask(); break;
-    case 5: viewProfile(); break;
-    case 6: editProfile(); break;
-    default: std::cout << "Неверный выбор! Попробуйте снова.\n";
+        case 1: addTask(); break;
+        case 2: viewTasks(); break;
+        case 3: editTask(); break;
+        case 4: deleteTask(); break;
+        case 5: viewProfile(); break;
+        case 6: editProfile(); break;
+        default: std::cout << "Неверный выбор! Попробуйте снова.\n";
     }
 }
 
@@ -45,6 +47,7 @@ void UserDashboard::addTask() {
     std::cin >> priorityTask;
     std::cout << "Статус задачи (0 - не выполняется, 1 - в процессе выполнения, 2 - выполнена): ";
     std::cin >> statusTask;
+
     if (currentSession->addTask(nameTask, descriptionTask, static_cast<uint8_t>(priorityTask),
         static_cast<uint8_t>(statusTask), deadlineTask, errorMessage))
         std::cout << "Задача добавлена\n";

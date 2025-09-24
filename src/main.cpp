@@ -337,10 +337,10 @@ int main(){
         cin >> k;
 
         switch (k) {
-        case 1: registration(); break;
-        case 2: authorization(); break;
-        case 0: return 0; break;
-        default: std::cout << "Неверный выбор! Попробуйте снова.\n";
+            case 1: registration(); break;
+            case 2: authorization(); break;
+            case 0: return 0; break;
+            default: std::cout << "Неверный выбор! Попробуйте снова.\n";
         }
 
         cout << endl;

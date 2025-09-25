@@ -21,9 +21,9 @@ public:
 	bool isValidSession() const;
 	void invalidate();
 	User* getCurrentUser() const;
-	std::vector<User*> getUsers(std::string& errorMessage) const;
-	std::vector<Task*> getTasks(std::string& errorMessage) const;
-	std::vector<Task*> getUserTasks(const uint32_t userID) const;
+	std::vector<const User*> getAllUsers(std::string& errorMessage) const;
+	std::vector<const Task*> getAllTasks(std::string& errorMessage) const;
+	std::vector<const Task*> getUserTasks(const uint32_t userID) const;
 	bool changeName(const std::string& newName, std::string& errorMessage);
 	bool changeLogin(const std::string& newLogin, std::string& errorMessage);
 	bool changePassword(const std::string& oldPassword, const std::string& newPassword, std::string& errorMessage);

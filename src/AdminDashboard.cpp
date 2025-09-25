@@ -38,7 +38,7 @@ void AdminDashboard::processChoice(int choice) {
 
 void AdminDashboard::viewAllUsers() {
     std::string errorMessage = "";
-    std::vector<User*> users = currentSession->getUsers(errorMessage);
+    std::vector<const User*> users = currentSession->getAllUsers(errorMessage);
     
     if (!errorMessage.empty()) {
         std::cout << errorMessage << std::endl;
@@ -57,7 +57,7 @@ void AdminDashboard::viewAllUsers() {
             << "\nID: " << user->getID()
             << "\nИмя:" << user->getName()
             << "\nЛогин: " << user->getLogin()
-            << "\nРоль: " << (user->getRole() ? "администратор\n" : "пользователь\n")
+            << "\nРоль: " << (user->getRole() ? "администратор" : "пользователь")
             << "\nКоличество задач: " << currentSession->getUserTasks(user->getID()).size() << std::endl;
     }
 }
@@ -73,7 +73,7 @@ void AdminDashboard::viewAllTasksUser() {
         return;
     }
 
-    std::vector<Task*> tasks = currentSession->getTasks(errorMessage);
+    std::vector<const Task*> tasks = currentSession->getUserTasks(userID);
 
     if (!errorMessage.empty()) {
         std::cout << errorMessage << std::endl;

@@ -56,7 +56,7 @@ void UserDashboard::addTask() {
 
 void UserDashboard::viewTasks() {
     uint32_t userID = currentSession->getCurrentUser()->getID();
-    std::vector<Task*> tasks = currentSession->getUserTasks(userID);
+    std::vector<const Task*> tasks = currentSession->getUserTasks(userID);
 
     if (tasks.empty()) {
         std::cout << "У вас нет задач.\n";
@@ -73,6 +73,7 @@ void UserDashboard::viewTasks() {
             << "\nПриоритет задачи: " << +task->getPriority()
             << "\nСтатус задачи: " << +task->getStatus() << std::endl;
     }
+
 }
 
 void UserDashboard::editTask() {
@@ -82,7 +83,7 @@ void UserDashboard::editTask() {
     std::cin >> taskID;
 
     if (!currentSession->findUserTaskID(taskID, errorMessage)) {
-        std::cout << errorMessage;
+        std::cout << errorMessage << std::endl;
         return;
     }
 

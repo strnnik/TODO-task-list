@@ -35,7 +35,7 @@ bool UserSession::addTask(const std::string& nameTask, const std::string& descri
         return false;
     }
 
-    if (priorityTask > 3 || statusTask > 3) {
+    if (priorityTask > 2 || statusTask > 2) {
         errorMessage = "Неверно указан приоритет или статус задачи";
         return false;
     }
@@ -118,7 +118,6 @@ bool UserSession::findUserTaskID(const uint32_t findTaskID, std::string& errorMe
 }
 
 bool UserSession::findUserID(const uint32_t findUserID, std::string& errorMessage) {
-    std::cout << "SDFSDFSD: " << findUserID << std::endl;
     if (!isValidSession()) {
         errorMessage = "Сессия неактуальна";
         return false;
@@ -147,14 +146,13 @@ bool UserSession::deleteTask(uint32_t delTaskID, std::string& errorMessage) {
     return true;
 }
 
-std::vector<User*> UserSession::getUsers(std::string& errorMessage) const {
-    
+std::vector<const User*> UserSession::getAllUsers(std::string& errorMessage) const {
     if (!currentUser->getRole()) {
         errorMessage = "Недостаточно прав";
         return {};
     }
     
-    std::vector<User*> vecUsers;
+    std::vector<const User*> vecUsers;
 
     for (auto& [userID, user] : users) 
         vecUsers.push_back(&user);
@@ -162,14 +160,13 @@ std::vector<User*> UserSession::getUsers(std::string& errorMessage) const {
     return vecUsers;
 }
 
-std::vector<Task*> UserSession::getTasks(std::string& errorMessage) const {
-    
+std::vector<const Task*> UserSession::getAllTasks(std::string& errorMessage) const {
     if (!currentUser->getRole()) {
         errorMessage = "Недостаточно прав";
         return {};
     }
 
-    std::vector<Task*> vecTasks;
+    std::vector<const Task*> vecTasks;
 
     for (auto& [taskID, task] : tasks)
         vecTasks.push_back(&task);
@@ -177,8 +174,8 @@ std::vector<Task*> UserSession::getTasks(std::string& errorMessage) const {
     return vecTasks;
 }
 
-std::vector<Task*> UserSession::getUserTasks(const uint32_t userID) const {
-    std::vector<Task*> userTasks;
+std::vector<const Task*> UserSession::getUserTasks(const uint32_t userID) const {
+    std::vector<const Task*> userTasks;
 
     for (auto& [taskID,  task] : tasks) {
         if (userID == task.getUserID())
@@ -252,7 +249,7 @@ bool UserSession::deleteUser(const uint32_t userID, std::string& errorMessage) {
         return false;
     }
 
-    std::vector<Task*> userTasks = getUserTasks(userID);
+    std::vector<const Task*> userTasks = getUserTasks(userID);
     for (auto task : userTasks) {
         tasks.erase(task->getID());
     }
